@@ -1,0 +1,40 @@
+{
+    "name": "SQL Environment",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": "..",
+        "args": {
+            "WORKDIR":"${localWorkspaceFolder}",
+            "USERNAME": "devcontainer",
+            "USER_UID": "1000",
+            "USER_GID": "1000",
+            
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash"
+            },
+            "extensions": [
+				"vue.volar",
+				"ms-python.python",
+				"GitHub.copilot"
+			]
+        }
+    },
+    "mounts": [
+        "source=${localEnv:HOME}/.ssh,target=/home/devcontainer/.ssh,type=bind",
+        "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+    ],
+    "workspaceFolder": "/workdir",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workdir,type=bind",
+    "runArgs": [
+        "--env-file", ".devcontainer/.env"
+    ],
+    "containerEnv": {
+        "WORKDIR": "${localWorkspaceFolder}",
+    }
+    // "postCreateCommand": "sudo chmod 666 /var/run/docker.sock"
+
+}
