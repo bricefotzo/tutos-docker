@@ -1,0 +1,37 @@
+version: '3'
+services:
+  sql-server:
+    image: postgres:13.12-bullseye
+    container_name: sql_server
+    env_file:
+      - .env
+    networks:
+      - sql_network
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 2
+      start_period: 1s  
+
+  sql-client:
+    image: postgres:13.12-bullseye
+    container_name: sql_client
+    env_file:
+      - .env
+    networks:
+      - sql_network
+    depends_on:
+      sql-server:
+        condition: service_healthy
+    volumes:
+      # - sql-client-data:/sql_data
+      - $WORKDIR:/container_dir
+    command: ["/bin/bash", "-c", "psql -h sql-server -U postgres -f /container_dir/query.sql"]
+
+networks:
+  sql_network:
+volumes:
+  sql-client-data:
