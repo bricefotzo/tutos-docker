@@ -1,0 +1,36 @@
+services:
+  spark-master:
+    image: custom-spark
+    container_name: spark-master
+    hostname: spark-master
+    networks:
+      - spark-network
+    ports:
+      - "8080:8080"
+      - "7077:7077"
+    volumes:
+      - spark-inputs:/data/inputs
+      - ./data/outputs:/data/outputs
+      - ./jobs:/jobs
+    environment:
+      - SPARK_MODE=master
+
+  spark-worker:
+    image: custom-spark
+    hostname: spark-worker
+    networks:
+      - spark-network
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_MODE=worker
+    volumes:
+      - spark-inputs:/data/inputs
+      - ./data/outputs:/data/outputs
+      - ./jobs:/jobs  
+
+networks:
+  spark-network:
+    driver: bridge
+
+volumes:
+  spark-inputs:
